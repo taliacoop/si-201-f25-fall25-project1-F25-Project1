@@ -83,3 +83,27 @@ def average_sales_by_state(data: List[Dict[str, Any]]) -> Dict[str, float]:
            avg_by_state[state] = sum(sales_list) / len(sales_list)
    return avg_by_state
 
+def percent_sales_in_california_furniture(data: List[Dict[str, Any]]) -> float:
+   """
+   Calculation 2:
+   Percentage (0-100) of California sales that are Furniture.
+   Uses columns: State, Category, Sales
+   """
+   total_ca_sales = 0.0
+   furniture_sales = 0.0
+
+
+   for row in data:
+       if row.get("State") == "California":
+           try:
+               s = float(row.get("Sales", "0") or "0")
+           except ValueError:
+               continue
+           total_ca_sales += s
+           if row.get("Category") == "Furniture":
+               furniture_sales += s
+
+
+   if total_ca_sales == 0:
+       return 0.0
+   return (furniture_sales / total_ca_sales) * 100.0
