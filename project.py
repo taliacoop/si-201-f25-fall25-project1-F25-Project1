@@ -98,3 +98,23 @@ def percent_sales_in_california_furniture(data: List[Dict[str, Any]]) -> float:
    if total_ca_sales == 0:
        return 0.0
    return (furniture_sales / total_ca_sales) * 100.0
+
+def percent_sales_office_supplies(data: List[Dict[str, Any]]) -> float:
+   total_sales = 0.0
+   office_sales = 0.0
+
+
+   for row in data:
+       try:
+           s = float(row.get("Sales", "0") or "0")
+       except ValueError:
+           continue
+       total_sales += s
+       if row.get("Category") == "Office Supplies":
+           office_sales += s
+
+
+   if total_sales == 0:
+       return 0.0
+   return (office_sales / total_sales) * 100.0
+
