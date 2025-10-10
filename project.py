@@ -136,5 +136,20 @@ class TestCalculations(unittest.TestCase):
         self.assertEqual(average_sales_in_south([]), 0.0)
         self.assertEqual(average_sales_in_south([{"Region": "South", "Sales": "not_a_number"}]), 0.0)
 
+    def test_average_sales_by_state(self):
+       data = [
+           {"State": "California", "Sales": "100"},
+           {"State": "California", "Sales": "200"},
+           {"State": "Texas", "Sales": "300"}
+       ]
+       # Normal cases
+       result = average_sales_by_state(data)
+       self.assertEqual(result["California"], 150.0)
+       self.assertEqual(result["Texas"], 300.0)
+       # Edge cases
+       self.assertEqual(average_sales_by_state([]), {})
+       self.assertEqual(average_sales_by_state([{"State": "California", "Sales": "oops"}]), {})
+
+
 if __name__ == "__main__":
     unittest.main()
