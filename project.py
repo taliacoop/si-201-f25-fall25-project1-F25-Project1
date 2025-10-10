@@ -118,3 +118,23 @@ def percent_sales_office_supplies(data: List[Dict[str, Any]]) -> float:
        return 0.0
    return (office_sales / total_sales) * 100.0
 
+#test cases
+import unittest
+
+
+class TestCalculations(unittest.TestCase):
+    def test_average_sales_in_south(self):
+        data = [
+            {"Region": "South", "Sales": "100"},
+            {"Region": "South", "Sales": "300"},
+            {"Region": "West", "Sales": "500"}
+        ]
+        # Normal cases
+        self.assertEqual(average_sales_in_south(data), 200.0)
+        self.assertEqual(average_sales_in_south([{"Region": "South", "Sales": "50"}]), 50.0)
+        # Edge cases
+        self.assertEqual(average_sales_in_south([]), 0.0)
+        self.assertEqual(average_sales_in_south([{"Region": "South", "Sales": "not_a_number"}]), 0.0)
+
+if __name__ == "__main__":
+    unittest.main()
