@@ -1,11 +1,14 @@
 
 
 
-#Talia Cooper 
-#
+# Talia Cooper and Casey Sara
+# Talia UMID: 8968 5759
+# Casey UMID: 0806 3805
 # tcooperr@umich.edu
-# collaborators: Casey Sara and ChatGPT. Used ChatGPT for hints about csv files and writing our functions. 
-# Talia created functions.... 
+# chsara@umich.edu
+# collaborators: Talia Cooper, Casey Sara, and ChatGPT. Used ChatGPT for hints about csv files and writing our functions. 
+# Talia created functions that calculated the average sales in the south and the average sales for each state.
+# Casey created functions that calculated percentage of sales in California that were furniture and percentage of sales that are office supplies
 
 
 import csv
@@ -42,11 +45,7 @@ def explore_data_brief(data: List[Dict[str, Any]]) -> Dict[str, Any]:
 ## part 7 - calculations
 
 def average_sales_in_south(data: List[Dict[str, Any]]) -> float:
-   """
-   Calculation 1:
-   Average of 'Sales' for rows where Region == 'South'.
-   Uses columns: Region, Sales
-   """
+
    total_sales = 0.0
    count = 0
    for row in data:
@@ -60,11 +59,7 @@ def average_sales_in_south(data: List[Dict[str, Any]]) -> float:
    return (total_sales / count) if count > 0 else 0.0
 
 def average_sales_by_state(data: List[Dict[str, Any]]) -> Dict[str, float]:
-   """
-   Calculation 3:
-   Returns a dict: {state: average_sales}.
-   Uses columns: State, Sales
-   """
+
    by_state: Dict[str, List[float]] = {}
    for row in data:
        state = row.get("State")
@@ -84,11 +79,7 @@ def average_sales_by_state(data: List[Dict[str, Any]]) -> Dict[str, float]:
    return avg_by_state
 
 def percent_sales_in_california_furniture(data: List[Dict[str, Any]]) -> float:
-   """
-   Calculation 2:
-   Percentage (0-100) of California sales that are Furniture.
-   Uses columns: State, Category, Sales
-   """
+
    total_ca_sales = 0.0
    furniture_sales = 0.0
 
