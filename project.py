@@ -180,6 +180,26 @@ class TestCalculations(unittest.TestCase):
        self.assertEqual(percent_sales_office_supplies([]), 0.0)
        self.assertEqual(percent_sales_office_supplies([{"Category": "Office Supplies", "Sales": "oops"}]), 0.0)
 
+# write into txt file
+def write_results_to_txt(
+    filename: str,
+    avg_south: float,
+    pct_ca_furn: float,
+    pct_office: float,
+    avg_by_state: Dict[str, float]
+) -> None:
+   
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write("--- Real Data Results ---\n")
+        f.write(f"Average Sales in South: ${avg_south:.2f}\n")
+        f.write(f"% of California Sales that are Furniture: {pct_ca_furn:.2f}%\n")
+        f.write(f"% of All Sales that are Office Supplies: {pct_office:.2f}%\n\n")
+
+        f.write("Average Sales by State:\n")
+        for state, avg in avg_by_state.items():
+            f.write(f"{state}: ${avg:.2f}\n")
+
+    print(f"\n Results successfully written to '{filename}'")
 
 
 # check real data 
@@ -193,14 +213,14 @@ def run_data_and_write_output(csv_filename: str) -> None:
     pct_office = percent_sales_office_supplies(data)
 
     print("\n--- Real Data Results ---")
-    print(f"Average Sales in South: {avg_south:.2f}")
+    print(f"Average Sales in the South: {avg_south:.2f}")
     print(f"% of California Sales that are Furniture: {pct_ca_furn:.2f}%")
     print(f"% of All Sales that are Office Supplies: {pct_office:.2f}%")
     
     print("\nAverage Sales by State:")
     for state, avg in avg_by_state.items():
         print(f"{state}: ${avg:.2f}")
-
+    write_results_to_txt("results.txt", avg_south, pct_ca_furn, pct_office, avg_by_state)
 
 if __name__ == "__main__":
     #unittest.main()
