@@ -182,6 +182,28 @@ class TestCalculations(unittest.TestCase):
 
 
 
+# check real data 
+
+def run_data_and_write_output(csv_filename: str) -> None:
+    data = load_data(csv_filename)
+    
+    avg_south = average_sales_in_south(data)
+    pct_ca_furn = percent_sales_in_california_furniture(data)
+    avg_by_state = average_sales_by_state(data)
+    pct_office = percent_sales_office_supplies(data)
+
+    print("\n--- Real Data Results ---")
+    print(f"Average Sales in South: {avg_south:.2f}")
+    print(f"% of California Sales that are Furniture: {pct_ca_furn:.2f}%")
+    print(f"% of All Sales that are Office Supplies: {pct_office:.2f}%")
+    
+    print("\nAverage Sales by State:")
+    for state, avg in avg_by_state.items():
+        print(f"{state}: ${avg:.2f}")
+
 
 if __name__ == "__main__":
-    unittest.main()
+    #unittest.main()
+
+    csvFile = "SampleSuperstore.csv"
+    run_data_and_write_output(csvFile)
