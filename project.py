@@ -136,5 +136,6 @@ class TestCalculations(unittest.TestCase):
         self.assertEqual(average_sales_in_south([]), 0.0)
         self.assertEqual(average_sales_in_south([{"Region": "South", "Sales": "not_a_number"}]), 0.0)
 
+
 if __name__ == "__main__":
     unittest.main()
