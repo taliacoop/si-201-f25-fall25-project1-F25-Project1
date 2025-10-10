@@ -167,6 +167,20 @@ class TestCalculations(unittest.TestCase):
        self.assertEqual(percent_sales_in_california_furniture([]), 0.0)
        self.assertEqual(percent_sales_in_california_furniture([{"State": "California", "Sales": "oops"}]), 0.0)
 
+    def test_percent_sales_office_supplies(self):
+       data = [
+           {"Category": "Office Supplies", "Sales": "100"},
+           {"Category": "Furniture", "Sales": "100"},
+           {"Category": "Technology", "Sales": "100"}
+       ]
+       # Normal cases
+       self.assertAlmostEqual(percent_sales_office_supplies(data), (100 / 300) * 100)
+       self.assertEqual(percent_sales_office_supplies([{"Category": "Office Supplies", "Sales": "50"}]), 100.0)
+       # Edge cases
+       self.assertEqual(percent_sales_office_supplies([]), 0.0)
+       self.assertEqual(percent_sales_office_supplies([{"Category": "Office Supplies", "Sales": "oops"}]), 0.0)
+
+
 
 
 if __name__ == "__main__":
