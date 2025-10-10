@@ -136,6 +136,38 @@ class TestCalculations(unittest.TestCase):
         self.assertEqual(average_sales_in_south([]), 0.0)
         self.assertEqual(average_sales_in_south([{"Region": "South", "Sales": "not_a_number"}]), 0.0)
 
+    def test_average_sales_by_state(self):
+       data = [
+           {"State": "California", "Sales": "100"},
+           {"State": "California", "Sales": "200"},
+           {"State": "Texas", "Sales": "300"}
+       ]
+       # Normal cases
+       result = average_sales_by_state(data)
+       self.assertEqual(result["California"], 150.0)
+       self.assertEqual(result["Texas"], 300.0)
+       # Edge cases
+       self.assertEqual(average_sales_by_state([]), {})
+       self.assertEqual(average_sales_by_state([{"State": "California", "Sales": "oops"}]), {})
+
+    def test_percent_sales_in_california_furniture(self):
+       data = [
+           {"State": "California", "Category": "Furniture", "Sales": "50"},
+           {"State": "California", "Category": "Office Supplies", "Sales": "50"},
+           {"State": "Texas", "Category": "Furniture", "Sales": "100"}
+       ]
+       # Normal cases
+       self.assertEqual(percent_sales_in_california_furniture(data), 50.0)
+       data2 = [
+           {"State": "California", "Category": "Furniture", "Sales": "25"},
+           {"State": "California", "Category": "Furniture", "Sales": "75"}
+       ]
+       self.assertEqual(round(percent_sales_in_california_furniture(data2)), 100)
+       # Edge cases
+       self.assertEqual(percent_sales_in_california_furniture([]), 0.0)
+       self.assertEqual(percent_sales_in_california_furniture([{"State": "California", "Sales": "oops"}]), 0.0)
+
+
 
 if __name__ == "__main__":
     unittest.main()
