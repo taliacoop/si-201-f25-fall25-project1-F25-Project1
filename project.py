@@ -8,9 +8,9 @@
 # chsara@umich.edu
 # collaborators: Talia Cooper, Casey Sara, and ChatGPT. Used ChatGPT for help with csv files, understanding erros, and help with the calculations. 
 # Talia created functions that calculated the average sales in the South (by category)
-# and the average sales for each state (by category).
-# Casey created functions that calculated percent of sales in California that were Furniture (in South)
-# and percent of sales that are Office Supplies (by region).
+# and percentage of sales that are office supplies (by region).
+# Casey created functions that calculated percent of sales in California that were Furniture
+# the average sales for each state (by category).
 import csv
 from typing import List, Dict, Any
 
@@ -78,7 +78,7 @@ def average_sales_by_state(data: List[Dict[str, Any]]) -> Dict[str, Dict[str, fl
 
 def percent_sales_in_california_furniture(data: List[Dict[str, Any]]) -> float:
     
-    #Calculates the % of California sales that are Furniture in the South region.
+    #Calculates the % of California sales that are Furniture.
     #Uses columns: State, Category, Sales
     
     total_ca_south_sales = 0.0
