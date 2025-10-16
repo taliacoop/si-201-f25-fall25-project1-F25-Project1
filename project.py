@@ -199,7 +199,7 @@ def write_results_to_txt(
             f.write(f"{category}: ${avg:.2f}\n")
         f.write("\n")
 
-        f.write(f"% of California Sales that are Furniture (in South): {pct_ca_furn:.2f}%\n\n")
+        f.write(f"% of California Sales that are Furniture : {pct_ca_furn:.2f}%\n\n")
 
         f.write("Percent of Office Supplies Sales by Region:\n")
         for region, pct in pct_office.items():
@@ -232,7 +232,7 @@ def run_data_and_write_output(csv_filename: str) -> None:
     for category, avg in avg_south.items():
         print(f"  {category}: ${avg:.2f}")
 
-    print(f"\n% of California Sales that are Furniture (in South): {pct_ca_furn:.2f}%")
+    print(f"\n% of California Sales that are Furniture: {pct_ca_furn:.2f}%")
 
     print("\nPercent of Office Supplies Sales by Region:")
     for region, pct in pct_office.items():
