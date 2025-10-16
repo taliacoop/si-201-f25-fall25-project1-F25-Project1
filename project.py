@@ -79,13 +79,13 @@ def average_sales_by_state(data: List[Dict[str, Any]]) -> Dict[str, Dict[str, fl
 def percent_sales_in_california_furniture(data: List[Dict[str, Any]]) -> float:
     
     #Calculates the % of California sales that are Furniture in the South region.
-    #Uses columns: State, Region, Category, Sales
+    #Uses columns: State, Category, Sales
     
     total_ca_south_sales = 0.0
     furniture_sales = 0.0
 
     for row in data:
-        if row.get("State") == "California" and row.get("Region") == "South":
+        if row.get("State") == "California":
             try:
                 s = float(row.get("Sales", "0") or "0")
             except ValueError:
