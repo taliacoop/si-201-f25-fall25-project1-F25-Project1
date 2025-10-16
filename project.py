@@ -18,10 +18,7 @@ from typing import List, Dict, Any
 # Part 2: Load / Explore Data
 
 def load_data(filename: str) -> List[Dict[str, Any]]:
-    """
-    Reads a CSV into a list of row dictionaries using csv.DictReader.
-    Returns: list[dict] where keys are column names and values are strings from the CSV.
-    """
+    
     data: List[Dict[str, Any]] = []
     with open(filename, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
@@ -31,10 +28,7 @@ def load_data(filename: str) -> List[Dict[str, Any]]:
 
 
 def explore_data_brief(data: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """
-    Returns quick metadata: number of rows, column names, and a sample row.
-    (Helpful during dev; not required for final output.)
-    """
+    
     info = {
         "num_rows": len(data),
         "columns": list(data[0].keys()) if data else [],
@@ -46,10 +40,7 @@ def explore_data_brief(data: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 def average_sales_in_south(data: List[Dict[str, Any]]) -> Dict[str, float]:
-    """
-    Calculates the average sales in the South for each Category.
-    Uses columns: Region, Category, Sales
-    """
+    
     category_sales = {}
     for row in data:
         if row.get("Region") == "South":
@@ -64,10 +55,7 @@ def average_sales_in_south(data: List[Dict[str, Any]]) -> Dict[str, float]:
     return avg_by_category
 
 def average_sales_by_state(data: List[Dict[str, Any]]) -> Dict[str, Dict[str, float]]:
-    """
-    Calculates average sales for each Category within each State.
-    Uses columns: State, Category, Sales
-    """
+    
     state_cat_sales = {}
     for row in data:
         state = row.get("State")
@@ -85,44 +73,52 @@ def average_sales_by_state(data: List[Dict[str, Any]]) -> Dict[str, Dict[str, fl
     return avg_by_state_cat
 
 def percent_sales_in_california_furniture(data: List[Dict[str, Any]]) -> float:
+    
+    total_ca_south_sales = 0.0
+    furniture_sales = 0.0
 
-   total_ca_sales = 0.0
-   furniture_sales = 0.0
+    for row in data:
+        if row.get("State") == "California" and row.get("Region") == "South":
+            try:
+                s = float(row.get("Sales", "0") or "0")
+            except ValueError:
+                continue
+            total_ca_south_sales += s
+            if row.get("Category") == "Furniture":
+                furniture_sales += s
 
-
-   for row in data:
-       if row.get("State") == "California":
-           try:
-               s = float(row.get("Sales", "0") or "0")
-           except ValueError:
-               continue
-           total_ca_sales += s
-           if row.get("Category") == "Furniture":
-               furniture_sales += s
-
-
-   if total_ca_sales == 0:
-       return 0.0
-   return (furniture_sales / total_ca_sales) * 100.0
-
-def percent_sales_office_supplies(data: List[Dict[str, Any]]) -> float:
-   total_sales = 0.0
-   office_sales = 0.0
+    if total_ca_south_sales == 0:
+        return 0.0
+    return (furniture_sales / total_ca_south_sales) * 100.0
 
 
-   for row in data:
-       try:
-           s = float(row.get("Sales", "0") or "0")
-       except ValueError:
-           continue
-       total_sales += s
-       if row.get("Category") == "Office Supplies":
-           office_sales += s
+def percent_sales_office_supplies(data: List[Dict[str, Any]]) -> Dict[str, float]:
+    """
+    Calculates % of Office Supplies sales within each Region.
+    Uses columns: Region, Category, Sales
+    """
+    region_totals = {}
+    region_office = {}
 
+    for row in data:
+        region = row.get("Region")
+        try:
+            s = float(row.get("Sales", "0") or "0")
+        except ValueError:
+            continue
 
-   if total_sales == 0:
-       return 0.0
-   return (office_sales / total_sales) * 100.0
+        region_totals[region] = region_totals.get(region, 0.0) + s
+        if row.get("Category") == "Office Supplies":
+            region_office[region] = region_office.get(region, 0.0) + s
+
+    pct_by_region = {}
+    for region in region_totals:
+        total = region_totals[region]
+        office = region_office.get(region, 0.0)
+        pct_by_region[region] = (office / total) * 100 if total > 0 else 0.0
+
+    return pct_by_region
+
 
 #test cases
 import unittest
@@ -138,7 +134,7 @@ class TestCalculations(unittest.TestCase):
         result = average_sales_in_south(data)
         self.assertAlmostEqual(result["Furniture"], 100.0)
         self.assertAlmostEqual(result["Technology"], 200.0)
-        # Edge case: empty data
+        # Edge case
         self.assertEqual(average_sales_in_south([]), {})
 
 
@@ -151,38 +147,33 @@ class TestCalculations(unittest.TestCase):
         result = average_sales_by_state(data)
         self.assertAlmostEqual(result["Texas"]["Furniture"], 150.0)
         self.assertAlmostEqual(result["California"]["Technology"], 300.0)
-        # Edge case: invalid numeric
+        # Edge case
         self.assertEqual(average_sales_by_state([{"State": "TX", "Category": "Furniture", "Sales": "oops"}]), {})
 
     def test_percent_sales_in_california_furniture(self):
-       data = [
-           {"State": "California", "Category": "Furniture", "Sales": "50"},
-           {"State": "California", "Category": "Office Supplies", "Sales": "50"},
-           {"State": "Texas", "Category": "Furniture", "Sales": "100"}
-       ]
-       # Normal cases
-       self.assertEqual(percent_sales_in_california_furniture(data), 50.0)
-       data2 = [
-           {"State": "California", "Category": "Furniture", "Sales": "25"},
-           {"State": "California", "Category": "Furniture", "Sales": "75"}
-       ]
-       self.assertEqual(round(percent_sales_in_california_furniture(data2)), 100)
-       # Edge cases
-       self.assertEqual(percent_sales_in_california_furniture([]), 0.0)
-       self.assertEqual(percent_sales_in_california_furniture([{"State": "California", "Sales": "oops"}]), 0.0)
+        data = [
+            {"State": "California", "Region": "South", "Category": "Furniture", "Sales": "100"},
+            {"State": "California", "Region": "South", "Category": "Technology", "Sales": "100"},
+            {"State": "Texas", "Region": "South", "Category": "Furniture", "Sales": "200"}
+        ]
+        result = percent_sales_in_california_furniture(data)
+        self.assertAlmostEqual(result, 50.0)
+        # Edge cases
+        self.assertEqual(percent_sales_in_california_furniture([]), 0.0)
+        self.assertEqual(percent_sales_in_california_furniture([{"State": "California", "Region": "South", "Sales": "oops"}]), 0.0)
 
     def test_percent_sales_office_supplies(self):
-       data = [
-           {"Category": "Office Supplies", "Sales": "100"},
-           {"Category": "Furniture", "Sales": "100"},
-           {"Category": "Technology", "Sales": "100"}
-       ]
-       # Normal cases
-       self.assertAlmostEqual(percent_sales_office_supplies(data), (100 / 300) * 100)
-       self.assertEqual(percent_sales_office_supplies([{"Category": "Office Supplies", "Sales": "50"}]), 100.0)
-       # Edge cases
-       self.assertEqual(percent_sales_office_supplies([]), 0.0)
-       self.assertEqual(percent_sales_office_supplies([{"Category": "Office Supplies", "Sales": "oops"}]), 0.0)
+        data = [
+            {"Region": "South", "Category": "Office Supplies", "Sales": "50"},
+            {"Region": "South", "Category": "Furniture", "Sales": "50"},
+            {"Region": "West", "Category": "Office Supplies", "Sales": "200"},
+            {"Region": "West", "Category": "Technology", "Sales": "100"},
+        ]
+        result = percent_sales_office_supplies(data)
+        self.assertAlmostEqual(result["South"], 50.0)
+        self.assertAlmostEqual(result["West"], (200 / 300) * 100)
+        # Edge case
+        self.assertEqual(percent_sales_office_supplies([]), {})
 
 # write into txt file
 def write_results_to_txt(
@@ -227,7 +218,7 @@ def run_data_and_write_output(csv_filename: str) -> None:
     write_results_to_txt("results.txt", avg_south, pct_ca_furn, pct_office, avg_by_state)
 
 if __name__ == "__main__":
-    unittest.main()
+    #unittest.main()
 
     csvFile = "SampleSuperstore.csv"
     run_data_and_write_output(csvFile)
