@@ -6,16 +6,16 @@
 # Casey UMID: 0806 3805
 # tcooperr@umich.edu
 # chsara@umich.edu
-# collaborators: Talia Cooper, Casey Sara, and ChatGPT. Used ChatGPT for hints about csv files and writing our functions. 
-# Talia created functions that calculated the average sales in the south and the average sales for each state.
-# Casey created functions that calculated percentage of sales in California that were furniture and percentage of sales that are office supplies
-
-
+# collaborators: Talia Cooper, Casey Sara, and ChatGPT. Used ChatGPT for help with csv files, understanding erros, and help with the calculations. 
+# Talia created functions that calculated the average sales in the South (by category)
+# and the average sales for each state (by category).
+# Casey created functions that calculated percent of sales in California that were Furniture (in South)
+# and percent of sales that are Office Supplies (by region).
 import csv
 from typing import List, Dict, Any
 
 
-# Part 2: Load / Explore Data
+# load / explore Data
 
 def load_data(filename: str) -> List[Dict[str, Any]]:
     
@@ -36,10 +36,12 @@ def explore_data_brief(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     }
     return info
 
-## part 7 - calculations
+#calculations
 
 
 def average_sales_in_south(data: List[Dict[str, Any]]) -> Dict[str, float]:
+    #Calculates the average sales in the South for each Category.
+    #Uses columns: Region, Category, Sales
     
     category_sales = {}
     for row in data:
@@ -55,6 +57,8 @@ def average_sales_in_south(data: List[Dict[str, Any]]) -> Dict[str, float]:
     return avg_by_category
 
 def average_sales_by_state(data: List[Dict[str, Any]]) -> Dict[str, Dict[str, float]]:
+    #Calculates average sales for each Category within each State.
+    #Uses columns: State, Category, Sales
     
     state_cat_sales = {}
     for row in data:
@@ -73,6 +77,9 @@ def average_sales_by_state(data: List[Dict[str, Any]]) -> Dict[str, Dict[str, fl
     return avg_by_state_cat
 
 def percent_sales_in_california_furniture(data: List[Dict[str, Any]]) -> float:
+    
+    #Calculates the % of California sales that are Furniture in the South region.
+    #Uses columns: State, Region, Category, Sales
     
     total_ca_south_sales = 0.0
     furniture_sales = 0.0
@@ -93,10 +100,10 @@ def percent_sales_in_california_furniture(data: List[Dict[str, Any]]) -> float:
 
 
 def percent_sales_office_supplies(data: List[Dict[str, Any]]) -> Dict[str, float]:
-    """
-    Calculates % of Office Supplies sales within each Region.
-    Uses columns: Region, Category, Sales
-    """
+    
+    #Calculates % of Office Supplies sales within each Region.
+    #Uses columns: Region, Category, Sales
+    
     region_totals = {}
     region_office = {}
 
@@ -178,43 +185,65 @@ class TestCalculations(unittest.TestCase):
 # write into txt file
 def write_results_to_txt(
     filename: str,
-    avg_south: float,
+    avg_south: Dict[str, float],
     pct_ca_furn: float,
-    pct_office: float,
-    avg_by_state: Dict[str, float]
+    pct_office: Dict[str, float],
+    avg_by_state: Dict[str, Dict[str, float]]
 ) -> None:
-   
+    """Writes all results neatly to a .txt file."""
     with open(filename, "w", encoding="utf-8") as f:
-        f.write("--- Real Data Results ---\n")
-        f.write(f"Average Sales in South: ${avg_south:.2f}\n")
-        f.write(f"% of California Sales that are Furniture: {pct_ca_furn:.2f}%\n")
-        f.write(f"% of All Sales that are Office Supplies: {pct_office:.2f}%\n\n")
+        f.write("--- Real Data Results ---\n\n")
 
-        f.write("Average Sales by State:\n")
-        for state, avg in avg_by_state.items():
-            f.write(f"{state}: ${avg:.2f}\n")
+        f.write("Average Sales in the South by Category:\n")
+        for category, avg in avg_south.items():
+            f.write(f"{category}: ${avg:.2f}\n")
+        f.write("\n")
 
-    print(f"\n Results successfully written to '{filename}'")
+        f.write(f"% of California Sales that are Furniture (in South): {pct_ca_furn:.2f}%\n\n")
+
+        f.write("Percent of Office Supplies Sales by Region:\n")
+        for region, pct in pct_office.items():
+            f.write(f"{region}: {pct:.2f}%\n")
+        f.write("\n")
+
+        f.write("Average Sales by State and Category:\n")
+        for state, cat_dict in avg_by_state.items():
+            f.write(f"{state}:\n")
+            for cat, avg in cat_dict.items():
+                f.write(f"  {cat}: ${avg:.2f}\n")
+            f.write("\n")
+
+    print(f"\nResults successfully written to '{filename}'")
 
 
 # check real data 
 
 def run_data_and_write_output(csv_filename: str) -> None:
     data = load_data(csv_filename)
-    
+
     avg_south = average_sales_in_south(data)
     pct_ca_furn = percent_sales_in_california_furniture(data)
     avg_by_state = average_sales_by_state(data)
     pct_office = percent_sales_office_supplies(data)
 
     print("\n--- Real Data Results ---")
-    print(f"Average Sales in the South: {avg_south:.2f}")
-    print(f"% of California Sales that are Furniture: {pct_ca_furn:.2f}%")
-    print(f"% of All Sales that are Office Supplies: {pct_office:.2f}%")
-    
-    print("\nAverage Sales by State:")
-    for state, avg in avg_by_state.items():
-        print(f"{state}: ${avg:.2f}")
+
+    print("\nAverage Sales in the South by Category:")
+    for category, avg in avg_south.items():
+        print(f"  {category}: ${avg:.2f}")
+
+    print(f"\n% of California Sales that are Furniture (in South): {pct_ca_furn:.2f}%")
+
+    print("\nPercent of Office Supplies Sales by Region:")
+    for region, pct in pct_office.items():
+        print(f"  {region}: {pct:.2f}%")
+
+    print("\nAverage Sales by State and Category:")
+    for state, cat_dict in avg_by_state.items():
+        print(f"{state}:")
+        for cat, avg in cat_dict.items():
+            print(f"  {cat}: ${avg:.2f}")
+
     write_results_to_txt("results.txt", avg_south, pct_ca_furn, pct_office, avg_by_state)
 
 if __name__ == "__main__":
