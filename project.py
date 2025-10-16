@@ -63,25 +63,26 @@ def average_sales_in_south(data: List[Dict[str, Any]]) -> Dict[str, float]:
     avg_by_category = {cat: sum(vals)/len(vals) for cat, vals in category_sales.items() if vals}
     return avg_by_category
 
-def average_sales_by_state(data: List[Dict[str, Any]]) -> Dict[str, float]:
+def average_sales_by_state(data: List[Dict[str, Any]]) -> Dict[str, Dict[str, float]]:
+    """
+    Calculates average sales for each Category within each State.
+    Uses columns: State, Category, Sales
+    """
+    state_cat_sales = {}
+    for row in data:
+        state = row.get("State")
+        category = row.get("Category")
+        try:
+            s = float(row.get("Sales", "0") or "0")
+        except ValueError:
+            continue
+        state_cat_sales.setdefault(state, {}).setdefault(category, []).append(s)
 
-   by_state: Dict[str, List[float]] = {}
-   for row in data:
-       state = row.get("State")
-       if not state:
-           continue
-       try:
-           s = float(row.get("Sales", "0") or "0")
-       except ValueError:
-           continue
-       by_state.setdefault(state, []).append(s)
-
-
-   avg_by_state: Dict[str, float] = {}
-   for state, sales_list in by_state.items():
-       if sales_list:
-           avg_by_state[state] = sum(sales_list) / len(sales_list)
-   return avg_by_state
+    avg_by_state_cat = {
+        state: {cat: sum(vals)/len(vals) for cat, vals in cat_dict.items() if vals}
+        for state, cat_dict in state_cat_sales.items()
+    }
+    return avg_by_state_cat
 
 def percent_sales_in_california_furniture(data: List[Dict[str, Any]]) -> float:
 
@@ -126,34 +127,32 @@ def percent_sales_office_supplies(data: List[Dict[str, Any]]) -> float:
 #test cases
 import unittest
 
-
 class TestCalculations(unittest.TestCase):
+
     def test_average_sales_in_south(self):
         data = [
-            {"Region": "South", "Sales": "100"},
-            {"Region": "South", "Sales": "300"},
-            {"Region": "West", "Sales": "500"}
+            {"Region": "South", "Category": "Furniture", "Sales": "100"},
+            {"Region": "South", "Category": "Technology", "Sales": "200"},
+            {"Region": "West", "Category": "Furniture", "Sales": "300"}
         ]
-        # Normal cases
-        self.assertEqual(average_sales_in_south(data), 200.0)
-        self.assertEqual(average_sales_in_south([{"Region": "South", "Sales": "50"}]), 50.0)
-        # Edge cases
-        self.assertEqual(average_sales_in_south([]), 0.0)
-        self.assertEqual(average_sales_in_south([{"Region": "South", "Sales": "not_a_number"}]), 0.0)
+        result = average_sales_in_south(data)
+        self.assertAlmostEqual(result["Furniture"], 100.0)
+        self.assertAlmostEqual(result["Technology"], 200.0)
+        # Edge case: empty data
+        self.assertEqual(average_sales_in_south([]), {})
+
 
     def test_average_sales_by_state(self):
-       data = [
-           {"State": "California", "Sales": "100"},
-           {"State": "California", "Sales": "200"},
-           {"State": "Texas", "Sales": "300"}
-       ]
-       # Normal cases
-       result = average_sales_by_state(data)
-       self.assertEqual(result["California"], 150.0)
-       self.assertEqual(result["Texas"], 300.0)
-       # Edge cases
-       self.assertEqual(average_sales_by_state([]), {})
-       self.assertEqual(average_sales_by_state([{"State": "California", "Sales": "oops"}]), {})
+        data = [
+            {"State": "Texas", "Category": "Furniture", "Sales": "100"},
+            {"State": "Texas", "Category": "Furniture", "Sales": "200"},
+            {"State": "California", "Category": "Technology", "Sales": "300"}
+        ]
+        result = average_sales_by_state(data)
+        self.assertAlmostEqual(result["Texas"]["Furniture"], 150.0)
+        self.assertAlmostEqual(result["California"]["Technology"], 300.0)
+        # Edge case: invalid numeric
+        self.assertEqual(average_sales_by_state([{"State": "TX", "Category": "Furniture", "Sales": "oops"}]), {})
 
     def test_percent_sales_in_california_furniture(self):
        data = [
@@ -228,7 +227,7 @@ def run_data_and_write_output(csv_filename: str) -> None:
     write_results_to_txt("results.txt", avg_south, pct_ca_furn, pct_office, avg_by_state)
 
 if __name__ == "__main__":
-    #unittest.main()
+    unittest.main()
 
     csvFile = "SampleSuperstore.csv"
     run_data_and_write_output(csvFile)
