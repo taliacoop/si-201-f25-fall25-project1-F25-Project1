@@ -44,19 +44,24 @@ def explore_data_brief(data: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 ## part 7 - calculations
 
-def average_sales_in_south(data: List[Dict[str, Any]]) -> float:
 
-   total_sales = 0.0
-   count = 0
-   for row in data:
-       if row.get("Region") == "South":
-           try:
-               total_sales += float(row.get("Sales", "0") or "0")
-               count += 1
-           except ValueError:
-               # Skip rows with non-numeric Sales
-               continue
-   return (total_sales / count) if count > 0 else 0.0
+def average_sales_in_south(data: List[Dict[str, Any]]) -> Dict[str, float]:
+    """
+    Calculates the average sales in the South for each Category.
+    Uses columns: Region, Category, Sales
+    """
+    category_sales = {}
+    for row in data:
+        if row.get("Region") == "South":
+            category = row.get("Category")
+            try:
+                s = float(row.get("Sales", "0") or "0")
+            except ValueError:
+                continue
+            category_sales.setdefault(category, []).append(s)
+
+    avg_by_category = {cat: sum(vals)/len(vals) for cat, vals in category_sales.items() if vals}
+    return avg_by_category
 
 def average_sales_by_state(data: List[Dict[str, Any]]) -> Dict[str, float]:
 
